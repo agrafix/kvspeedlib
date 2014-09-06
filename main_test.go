@@ -12,36 +12,8 @@ type TestStoreVal struct {
 	Foo string
 }
 
-type DummyStoreEngine struct {
-	Data map[uint64]map[uint64]TestStoreVal
-}
-
-func (se DummyStoreEngine) Save(owner uint64, key uint64, val TestStoreVal) {
-	_, ok := se.Data[owner]
-	if !ok {
-		se.Data[owner] = make(map[uint64]TestStoreVal)
-	}
-	se.Data[owner][key] = val
-}
-
-func (se DummyStoreEngine) MultiLoad(maxKey uint64, owner uint64, limit int) []interface{} {
-	ownersData := se.Data[owner]
-	ct := 0
-
-	interfs := make([]interface{}, 0, 0)
-	for k, v := range ownersData {
-		if k < maxKey && ct <= limit {
-			interfs = append(interfs, v)
-			ct++
-		}
-	}
-
-	return interfs
-}
-
 var (
-	DummyStore DummyStoreEngine
-	OwnerCt    uint64
+	OwnerCt uint64
 )
 
 func mkOwner() uint64 {
@@ -60,9 +32,6 @@ func mkKvStore(name string, secs int) *kvspeedlib.KVBase {
 }
 
 func init() {
-	DummyStore = DummyStoreEngine{
-		Data: make(map[uint64]map[uint64]TestStoreVal),
-	}
 	OwnerCt = 0
 }
 
@@ -77,7 +46,6 @@ func TestAdd(t *testing.T) {
 	savedChan := make(chan bool, 1)
 	jsonBytes, _ := json.Marshal(value)
 	kvstore.StoreValue(owner1, jsonBytes, func(key uint64) {
-		DummyStore.Save(owner1, key, value)
 		savedChan <- true
 	})
 
@@ -110,7 +78,6 @@ func TestExpire(t *testing.T) {
 	savedChan := make(chan bool, 1)
 	jsonBytes, _ := json.Marshal(value)
 	kvstore.StoreValue(owner1, jsonBytes, func(key uint64) {
-		DummyStore.Save(owner1, key, value)
 		savedChan <- true
 	})
 
