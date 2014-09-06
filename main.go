@@ -76,7 +76,6 @@ func worker(base *KVBase) {
 		}
 		nextKey, _ := r.Int64()
 		storeAction.Key = uint64(nextKey)
-		c.Cmd("EXPIRE", ownerKey+"_idx", uint64(base.cacheTtl.Seconds()+5))
 
 		now := time.Now().Format("20060102150405")
 		valueKey := base.mkValueKey(storeAction.Key)
