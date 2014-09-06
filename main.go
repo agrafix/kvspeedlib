@@ -81,6 +81,8 @@ func worker(base *KVBase) {
 		now := time.Now().Format("20060102150405")
 		valueKey := base.mkValueKey(storeAction.Key)
 		c.Cmd("ZADD", ownerKey+"_set", now, valueKey)
+		c.Cmd("EXPIRE", ownerKey+"_set", uint64(base.cacheTtl.Seconds()+5))
+
 		c.Cmd("SET", valueKey, bytes)
 		c.Cmd("EXPIRE", valueKey, uint64(base.cacheTtl.Seconds()))
 		base.storeQueue <- storeAction
