@@ -86,9 +86,12 @@ func TestAdd(t *testing.T) {
 		t.Error("Never saved anything")
 	}
 
-	_, foundItems := kvstore.LoadValues(owner1, 100)
+	minKey, foundItems := kvstore.LoadValues(owner1, 100)
 	if len(foundItems) != 1 {
 		t.Errorf("LoadValues didn't return the saved key. Count: %d", len(foundItems))
+	}
+	if minKey != 1 {
+		t.Errorf("LoadValues returned a wrong minKey: %d", minKey)
 	}
 
 	_, foundItems2 := kvstore.LoadValues(owner2, 100)
