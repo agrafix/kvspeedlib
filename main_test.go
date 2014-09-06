@@ -61,6 +61,14 @@ func TestAdd(t *testing.T) {
 	if minKey != 1 {
 		t.Errorf("LoadValues returned a wrong minKey: %d", minKey)
 	}
+	var outVal TestStoreVal
+	err := json.Unmarshal(foundItems[0], &outVal)
+	if err != nil {
+		t.Error(err)
+	}
+	if outVal != value {
+		t.Error("I didn't get out what I stored.")
+	}
 
 	_, foundItems2 := kvstore.LoadValues(owner2, 100)
 	if len(foundItems2) != 0 {
